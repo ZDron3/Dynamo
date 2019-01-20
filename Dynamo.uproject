@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{2AD45BEA-4D8D-ACE4-C6E7-D3BCEADB7FC9}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "Dynamo",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
+}
