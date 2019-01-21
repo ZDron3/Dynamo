@@ -110,6 +110,8 @@ void ABombs::ExplosionStep(const FIntPoint& Location, const FIntPoint& Direction
 			{
 				LevelManager->SpawnPowerUps(Wall, FMath::RandRange(1, 4));
 			}
+			return;
+
 		}
 		else
 		{

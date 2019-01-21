@@ -17,6 +17,46 @@
 ALevelManager::ALevelManager()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	//todo setup init components using bP for levelmanager
+	static ConstructorHelpers::FClassFinder<AActor>WallTemplateClass(TEXT("/Game/BP/InDestructable"));
+	if (WallTemplateClass.Class != NULL)
+	{
+		WallClass = WallTemplateClass.Class;
+	}
+	static ConstructorHelpers::FClassFinder<AActor>UnbreakableBlockTemplateClass(TEXT("/Game/BP/InDestructable"));
+	if (UnbreakableBlockTemplateClass.Class != NULL)
+	{
+		UnbreakableBlockClass = UnbreakableBlockTemplateClass.Class;
+	}
+	static ConstructorHelpers::FClassFinder<AActor>BreakableBlockTemplateClass(TEXT("/Game/BP/Destructable"));
+	if (BreakableBlockTemplateClass.Class != NULL)
+	{
+		BreakableBlockClass = BreakableBlockTemplateClass.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<AActor> AmountPowerUpClassTemplateClass(TEXT("/Game/BP/PowerUp/BP_AmountPowerUp"));
+	if (AmountPowerUpClassTemplateClass.Class != NULL)
+	{
+		AmountPowerUpClass = AmountPowerUpClassTemplateClass.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<AActor> RangePowerUpTemplateClass(TEXT("/Game/BP/PowerUp/BP_RangePowerUp"));
+	if (RangePowerUpTemplateClass.Class != NULL)
+	{
+		RangePowerUpClass = RangePowerUpTemplateClass.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<AActor> RemotePowerUpTemplateClass(TEXT("/Game/BP/PowerUp/BP_RemotePowerUp"));
+	if (RemotePowerUpTemplateClass.Class != NULL)
+	{
+		RemotePowerUpClass = RemotePowerUpTemplateClass.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<AActor> SprintPowerUpTemplateClass(TEXT("/Game/BP/PowerUp/BP_SprintPowerUp"));
+	if (SprintPowerUpTemplateClass.Class != NULL)
+	{
+		SprintPowerUpClass = SprintPowerUpTemplateClass.Class;
+	}
 }
 
 void ALevelManager::OnConstruction(const FTransform& Transform)
@@ -49,11 +89,6 @@ ALevelManager* ALevelManager::Get(UWorld* const World)
 }
 void ALevelManager::SpawnBaseBlocks()
 {
-	/*UE_CLOG(!IsValid(WallClass), LogTemp, Warning, TEXT("WallClass not set."));
-	UE_CLOG(!IsValid(UnbreakableBlockClass), LogTemp, Warning, TEXT("UnbreakableBlockClass not set."));*/
-
-
-
 	// Iterate through every grid cell
 	for (int32 GridX = 0; GridX < GridSize.X; ++GridX)
 	{
@@ -85,12 +120,15 @@ void ALevelManager::SpawnBaseBlocks()
 					{
 						CreateBlock(BreakableBlockClass, GridCoords);
 					}
+					else
+					{
+						FreeCords.Add(GridCoords);
+					}
 				}
 				
 			}
 		}
 	}
-
 
 //walls todo
 void ALevelManager::CreateBlock(const TSubclassOf<AWalls> BlockClass,

@@ -30,7 +30,7 @@ public:
 		int32 MaxBombs = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 BombRange = 3;
+		int32 BombRange = 2;
 
 	// Active remote controlled bomb effects count.
 	// When it's down to 0, the player will not drop remote controlled bombs.

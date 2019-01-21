@@ -126,7 +126,7 @@ void ADynamoCharacter::MoveLeft_Right(float Val)
 		check(IsValid(World));
 
 		ADynamoGameModeBase* GameMode = CastChecked<ADynamoGameModeBase>(World->GetAuthGameMode());
-	//GameMode->NotifyPlayerDied();
+	    GameMode->NotifyPlayerDied();
 	}
 
 	TArray<ADynamoCharacter*> ADynamoCharacter::GetAllPlayerPawns(UWorld* const World)

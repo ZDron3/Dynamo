@@ -67,15 +67,16 @@ public:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
+	TArray<FIntPoint> FreeCords;
+
 protected:
 	// Number of cells in each dimension in the grid.
 	UPROPERTY(EditAnywhere)
-		FIntPoint GridSize = FIntPoint{ 15, 15 };
+		FIntPoint GridSize = FIntPoint{ 13, 13 };
 
 	// Size of a single cell
 	UPROPERTY(EditAnywhere)
-		float CellSize = 100.f;
-
+		float CellSize = 150.f;
 	//walls
 
 	UPROPERTY(EditAnywhere)
@@ -100,6 +101,8 @@ protected:
 		TSubclassOf<ARemotePowerUp> RemotePowerUpClass;
 
 	bool Decide = false;
+
+
 
 
 
