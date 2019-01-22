@@ -2,8 +2,6 @@
 
 #include "AmountPowerUp.h"
 #include "DynamoCharacter.h"
-//#include "Characters/BomberManPlayerState.h" //change bomb stats to player state todo
-
 
 AAmountPowerUp::AAmountPowerUp() :
 	IncrementAmount(2.0f)

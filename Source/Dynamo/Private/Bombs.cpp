@@ -26,23 +26,6 @@ void ABombs::InitializeBombData(ADynamoCharacter* const InOwnerPawn, const float
 	}
 }
 
-void ABombs::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	if (EndPlayReason == EEndPlayReason::Destroyed)
-	{
-		// Decrement owner Bombs count
-		if (IsValid(OwnerPawn))
-		{
-			OwnerPawn->CurrentBombCount--;
-			check(OwnerPawn->CurrentBombCount >= 0);
-		}
-
-		Explode();
-	}
-}
-
 void ABombs::BeginPlay()
 {
 	Super::BeginPlay();
@@ -57,11 +40,11 @@ void ABombs::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("%s has no owner pawn."), *GetName());
 	}
 
-	ALevelManager::SnapActorToGrid(this);
+	ALevelManager::ActorToGrid(this);
 
 	LevelManager = ALevelManager::Get(GetWorld());
 }
-
+//todo
 void ABombs::Explode()
 {
 	UWorld* const World = GetWorld();
@@ -148,4 +131,21 @@ void ABombs::ExplosionStep(const FIntPoint& Location, const FIntPoint& Direction
 	AParticleActor* const Particle =	World->SpawnActor<AParticleActor>(ParticleClass, ExplosionWorldLocation, FRotator::ZeroRotator);
 	check(IsValid(Particle));
 	ExplosionStep(Location + Direction, Direction, Range - 1);
+}
+
+void ABombs::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (EndPlayReason == EEndPlayReason::Destroyed)
+	{
+		// Decrement owner Bombs count
+		if (IsValid(OwnerPawn))
+		{
+			OwnerPawn->CurrentBombCount--;
+			check(OwnerPawn->CurrentBombCount >= 0);
+		}
+
+		Explode();
+	}
 }

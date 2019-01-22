@@ -18,33 +18,22 @@ public:
 	// Sets default values for this pawn's properties
 	ADynamoCharacter();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//	UGridMovementComponent* GridMovementComponent;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 MaxBombs = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 BombRange = 2;
 
-	// Active remote controlled bomb effects count.
-	// When it's down to 0, the player will not drop remote controlled bombs.
-	// When it's equal to one or more, the player will drop remote controlled bombs.
+  //bool to check whether the remote power is acquired if yes then initialize the bomb data accordingly
 	UPROPERTY(BlueprintReadWrite)
-		int32 RemoteControlPowerupEffectCount = 0;
+	bool RemoteControlPowerupEffect = false;
 
 	int32 CurrentBombCount = 0;
 
-	UFUNCTION(BlueprintPure, Category = "BombermanClone")
+	UFUNCTION(BlueprintPure, Category = "Dynamo")
 		int32 GetScore() const;
 	void  IncrementScore();
 
-	/*UGridMovementComponent* GetGridMovementComponent() const { return GridMovementComponent; }*/
 
 	// Returns the Controller ID if the Local Player is available, otherwise returns an empty object.
 	TOptional<int32> GetPlayerControllerId() const;
@@ -57,24 +46,19 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<ABombs> BombClass;
+		TSubclassOf<ABombs> BombClass;
 
 	UPROPERTY(EditAnywhere)
 		int32 BombLifetimeSeconds = 2.f;
 
 	// Returns the Controller ID if a human player controls this pawn, otherwise returns -1.
-	UFUNCTION(BlueprintPure, Category = "Bomberman", meta = (DisplayName = "GetPlayerControllerId"))
-		void K2_GetPlayerControllerId(bool& OutIsPlayerHuman, int32& OutPlayerControllerId) const;
+	UFUNCTION(BlueprintPure, Category = "Dynamo", meta = (DisplayName = "GetPlayerControllerId"))
+		void Dynamo_GetPlayerControllerId(bool& OutIsPlayerHuman, int32& OutPlayerControllerId) const;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Player2Init")
-		void SetMeshRotation(float SetMeshForward, float SetMeshLeft);
 
 private:
-	void MoveX(const float AxisInput);
-	void MoveY(const float AxisInput);
 	void MoveForward_Backward(float Val);
 	void MoveLeft_Right(float Val);
-	
 
 	void DetonateRemoteControlledBombs();
 

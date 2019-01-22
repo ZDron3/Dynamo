@@ -44,4 +44,7 @@ FString UDynamoGameInstance::GenerateScoreString() const
 	return FString::Join(ScoreLines, TEXT("\n"));
 }
 
-
+TArray<FPlayerConfiguration> UDynamoGameInstance::GetPlayerConfig()
+{
+	return PlayerConfigs;
+}

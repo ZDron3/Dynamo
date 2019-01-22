@@ -26,14 +26,10 @@ public:
 	// Returns the LevelGrid actor for this level.
 	static ALevelManager* Get(UWorld* const World);
 
-	void SpawnPowerUps(FVector location, int Choice);
+	// Location to the center of its cell in the grid.
+	FVector CenterToGrid(const FVector& WorldLocation) const;
 
-	void GetPowerUps();
-
-	// Snap a location to the center of its cell in the grid.
-	FVector SnapToGrid(const FVector& WorldLocation) const;
-
-	static void SnapActorToGrid(AActor* const Actor);
+	static void ActorToGrid(AActor* const Actor);
 
 	// Returns all actors of the given type located in a grid cell.
 	//todo
@@ -51,8 +47,6 @@ public:
 		}
 		return Actors;
 	}
-
-	virtual void BeginPlay() override;
 	
 	void SpawnPowerUps(AWalls* location,int Choice) const;
 
@@ -71,6 +65,7 @@ public:
 
 protected:
 	// Number of cells in each dimension in the grid.
+	//changes can be made here to change the cell amount and size
 	UPROPERTY(EditAnywhere)
 		FIntPoint GridSize = FIntPoint{ 13, 13 };
 
@@ -88,6 +83,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "PowerUps")
 		TSubclassOf<AWalls> BreakableBlockClass;
 
+	//powerups
+
 	UPROPERTY(EditDefaultsOnly, Category = "PowerUps")
 		TSubclassOf<AAmountPowerUp> AmountPowerUpClass;
 
@@ -103,14 +100,10 @@ protected:
 	bool Decide = false;
 
 
-
-
-
-
 private:
 	// Spawns the blocks that are present in every level.
 	void SpawnBaseBlocks();
-
+	
 	// Creates a block in a given cell.
 	void CreateBlock(const TSubclassOf<AWalls> WallClass, const FIntPoint& GridCoords);
 

@@ -31,21 +31,22 @@ public:
 	void  IncrementPlayerScore(const int32 PlayerId);
 	int32 GetPlayerScore(const int32 PlayerId) const;
 
-	UFUNCTION(BlueprintPure, Category = "BombermanClone")
+	UFUNCTION(BlueprintPure, Category = "Dynamo")
 		FString GetScoreString() const;
+	
+
+	UFUNCTION(BlueprintPure, Category = "Dynamo")
+	TArray<FPlayerConfiguration> GetPlayerConfig();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<FPlayerConfiguration> PlayerConfigs;
 
 private:
-	// Keys: Player Controller IDs
-	// Values: Scores
 	TMap<int32, int32> PlayerScores;
 
 	mutable FString CachedScoreString;
 
 	FString GenerateScoreString() const;
-	
-	
+		
 };
 

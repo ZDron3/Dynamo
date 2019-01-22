@@ -17,7 +17,7 @@ void AWalls::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AWalls::BeginPlay()
 {
 	Super::BeginPlay();
-	ALevelManager::SnapActorToGrid(this);
+	ALevelManager::ActorToGrid(this);
 }
 
 void AWalls::SpawnPowerup()

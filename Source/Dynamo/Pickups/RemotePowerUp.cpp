@@ -13,6 +13,6 @@ ARemotePowerUp::ARemotePowerUp() :
 void ARemotePowerUp::PickedUpBy_Implementation(ADynamoCharacter* Character)
 {
 
-	Character->RemoteControlPowerupEffectCount += 1;
+	Character->RemoteControlPowerupEffect = true;
 	Super::PickedUpBy_Implementation(Character);
 }

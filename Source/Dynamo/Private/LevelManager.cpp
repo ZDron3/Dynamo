@@ -13,11 +13,13 @@
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "EngineUtils.h"
 
+/*Responsible for creating the procedural map for the game, the walls and powerup's
+Generally Level realted functionality*/
 
 ALevelManager::ALevelManager()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	//todo setup init components using bP for levelmanager
+	// setup init components using bP for levelmanager
 	static ConstructorHelpers::FClassFinder<AActor>WallTemplateClass(TEXT("/Game/BP/InDestructable"));
 	if (WallTemplateClass.Class != NULL)
 	{
@@ -89,6 +91,7 @@ ALevelManager* ALevelManager::Get(UWorld* const World)
 }
 void ALevelManager::SpawnBaseBlocks()
 {
+	//create a grid map
 	// Iterate through every grid cell
 	for (int32 GridX = 0; GridX < GridSize.X; ++GridX)
 	{
@@ -161,48 +164,6 @@ void ALevelManager::ClearAllGeneratedBlocks()
 	}
 }
 
-
-FVector ALevelManager::GetWorldLocationFromCell(const FIntPoint& GridCoords) const
-{
-	// The grid is centered at world location (0, 0, CellSize/2)
-	return FVector{ FVector2D{GridCoords - GridSize / 2}, 0.5f } *CellSize;
-}
-
-FIntPoint ALevelManager::GetCellFromWorldLocation(const FVector& WorldLocation) const
-{
-	return FIntPoint{ FMath::RoundToInt(WorldLocation.X / CellSize), FMath::RoundToInt(WorldLocation.Y / CellSize) } +
-		GridSize / 2;
-}
-
-FIntPoint ALevelManager::GetActorCell(const AActor* const Actor) const
-{
-	check(IsValid(Actor));
-	return GetCellFromWorldLocation(Actor->GetActorLocation());
-}
-
-FVector ALevelManager::SnapToGrid(const FVector& WorldLocation) const
-{
-	const FIntPoint Cell = GetCellFromWorldLocation(WorldLocation);
-	return GetWorldLocationFromCell(Cell);
-}
-
-void ALevelManager::SnapActorToGrid(AActor* const Actor)
-{
-	check(IsValid(Actor));
-
-	const ALevelManager* const LevelManager = Get(Actor->GetWorld());
-	check(IsValid(LevelManager));
-
-	const FVector SnappedPosition = LevelManager->SnapToGrid(Actor->GetActorLocation());
-	Actor->SetActorLocation(SnappedPosition);
-}
-
-void ALevelManager::BeginPlay()
-{
-	Super::BeginPlay();
-  //todo player spawn logic wrt to proc generation
-}
-
 void ALevelManager::SpawnPowerUps(AWalls * location, int Choice) const
 {
 	if (Choice != 0)
@@ -224,5 +185,43 @@ void ALevelManager::SpawnPowerUps(AWalls * location, int Choice) const
 			ABasePowerUp* pickup = GetWorld()->SpawnActor<ABasePowerUp>(SprintPowerUpClass, location->GetActorTransform());
 		}
 	}
+}
+
+
+
+
+FVector ALevelManager::GetWorldLocationFromCell(const FIntPoint& GridCoords) const
+{
+	// The grid is centered at world location (0, 0, CellSize/2)
+	return FVector{ FVector2D{GridCoords - GridSize / 2}, 0.5f } *CellSize;
+}
+
+FIntPoint ALevelManager::GetCellFromWorldLocation(const FVector& WorldLocation) const
+{
+	return FIntPoint{ FMath::RoundToInt(WorldLocation.X / CellSize), FMath::RoundToInt(WorldLocation.Y / CellSize) } +
+		GridSize / 2;
+}
+
+FIntPoint ALevelManager::GetActorCell(const AActor* const Actor) const
+{
+	check(IsValid(Actor));
+	return GetCellFromWorldLocation(Actor->GetActorLocation());
+}
+
+FVector ALevelManager::CenterToGrid(const FVector& WorldLocation) const
+{
+	const FIntPoint Cell = GetCellFromWorldLocation(WorldLocation);
+	return GetWorldLocationFromCell(Cell);
+}
+
+void ALevelManager::ActorToGrid(AActor* const Actor)
+{
+	check(IsValid(Actor));
+
+	const ALevelManager* const LevelManager = Get(Actor->GetWorld());
+	check(IsValid(LevelManager));
+
+	const FVector SnappedPosition = LevelManager->CenterToGrid(Actor->GetActorLocation());
+	Actor->SetActorLocation(SnappedPosition);
 }
 

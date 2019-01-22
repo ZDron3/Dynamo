@@ -17,40 +17,6 @@ ADynamoCharacter::ADynamoCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-int32 ADynamoCharacter::GetScore() const
-{
-	// Retrieve the score from the GameInstance.
-
-	UWorld* const World = GetWorld();
-	check(IsValid(World));
-
-	UDynamoGameInstance* const GameInstance = World->GetGameInstanceChecked<UDynamoGameInstance>();
-
-	const TOptional<int32> PlayerControllerId = GetPlayerControllerId();
-
-	if (!PlayerControllerId.IsSet())
-	{
-		return 0;
-	}
-	return GameInstance->GetPlayerScore(PlayerControllerId.GetValue());
-}
-
-void ADynamoCharacter::IncrementScore()
-{
-	// Store the score from the GameInstance so it presists between matches.
-
-	UWorld* const World = GetWorld();
-	check(IsValid(World));
-
-	const TOptional<int32> PlayerControllerId = GetPlayerControllerId();
-	if (!PlayerControllerId.IsSet())
-	{
-		return;
-	}
-
-	UDynamoGameInstance* const GameInstance = World->GetGameInstanceChecked<UDynamoGameInstance>();
-	GameInstance->IncrementPlayerScore(PlayerControllerId.GetValue());
-}
 
 void ADynamoCharacter::SetupPlayerInputComponent(UInputComponent* const PlayerInputComponent)
 {
@@ -68,9 +34,7 @@ void ADynamoCharacter::SetupPlayerInputComponent(UInputComponent* const PlayerIn
 	// Part of the hack for local player keyboard sharing descibed in
 
 	if (ControllerId == 0)
-	{ //temp todo
-		//InputComponent->BindAxis(TEXT("Player0_MoveX"), this, &ThisClass::MoveX);
-		//InputComponent->BindAxis(TEXT("Player0_MoveY"), this, &ThisClass::MoveY);
+	{ 
 		InputComponent->BindAxis("MoveForward_Backward", this, &ADynamoCharacter::MoveForward_Backward);
 		InputComponent->BindAxis("MoveLeft_Right", this, &ADynamoCharacter::MoveLeft_Right);
 		InputComponent->BindAction(TEXT("Player0_DropBomb"), IE_Pressed, this, &ADynamoCharacter::DropBomb);
@@ -78,9 +42,6 @@ void ADynamoCharacter::SetupPlayerInputComponent(UInputComponent* const PlayerIn
 	}
 	else if (ControllerId == 1)
 	{
-		//temp todo
-		/*InputComponent->BindAxis(TEXT("Player1_MoveX"), this, &ThisClass::MoveX);
-		InputComponent->BindAxis(TEXT("Player1_MoveY"), this, &ThisClass::MoveY);*/
 		InputComponent->BindAxis("MoveForward_Backward2", this, &ADynamoCharacter::MoveForward_Backward);
 		InputComponent->BindAxis("MoveLeft_Right2", this, &ADynamoCharacter::MoveLeft_Right);
 		
@@ -101,7 +62,6 @@ void ADynamoCharacter::MoveForward_Backward(float Val)
 		const FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::X);
 		// Limit pitch when walking or falling
 		AddMovementInput(Direction, Val);
-		SetMeshRotation(Val, 0);
 	}
 }
 void ADynamoCharacter::MoveLeft_Right(float Val)
@@ -113,7 +73,6 @@ void ADynamoCharacter::MoveLeft_Right(float Val)
 		const FVector Direction = FRotationMatrix(GetControlRotation()).GetScaledAxis(EAxis::Y);
 		// Limit pitch when walking or falling
 		AddMovementInput(Direction, Val);
-		SetMeshRotation(Val, 0);
 	}
 }
 
@@ -142,7 +101,7 @@ void ADynamoCharacter::MoveLeft_Right(float Val)
 		return AllPlayerPawns;
 	}
 
-	void ADynamoCharacter::K2_GetPlayerControllerId(bool& OutIsPlayerHuman, int32& OutPlayerControllerId) const
+	void ADynamoCharacter::Dynamo_GetPlayerControllerId(bool& OutIsPlayerHuman, int32& OutPlayerControllerId) const
 	{
 		const TOptional<int32> ControllerId = GetPlayerControllerId();
 
@@ -156,12 +115,6 @@ void ADynamoCharacter::MoveLeft_Right(float Val)
 			OutIsPlayerHuman = true;
 			OutPlayerControllerId = ControllerId.GetValue();
 		}
-	}
-
-	void ADynamoCharacter::BeginPlay()
-	{
-		Super::BeginPlay();
-	//	ALevelManager::SnapActorToGrid(this); //get using gamemode
 	}
 
 	TOptional<int32> ADynamoCharacter::GetPlayerControllerId() const
@@ -179,21 +132,9 @@ void ADynamoCharacter::MoveLeft_Right(float Val)
 		return LocalPlayer->GetControllerId();
 	}
 
-	void ADynamoCharacter::MoveX(const float AxisInput)
-	{
-		//check(IsValid(GridMovementComponent));
-		// GridMovementComponent->Move(-FVector::RightVector, AxisInput); not needed
-	}
-
-	void ADynamoCharacter::MoveY(const float AxisInput)
-	{
-		//check(IsValid(GridMovementComponent));
-		//	GridMovementComponent->Move(FVector::ForwardVector, AxisInput); not needed
-	}
-
 	void ADynamoCharacter::DetonateRemoteControlledBombs()
 	{
-		RemoteControlPowerupEffectCount = 0;
+		RemoteControlPowerupEffect = false;
 		for (ABombs* const Bomb : TActorRange<ABombs>{ GetWorld() })
 		{
 			
@@ -228,7 +169,41 @@ void ADynamoCharacter::MoveLeft_Right(float Val)
 		ABombs* const Bomb = World->SpawnActorDeferred<ABombs>(BombClass, SpawnTransform);
 		check(IsValid(Bomb));
 
-		Bomb->InitializeBombData(this, BombLifetimeSeconds, BombRange, RemoteControlPowerupEffectCount > 0);
+		Bomb->InitializeBombData(this, BombLifetimeSeconds, BombRange, RemoteControlPowerupEffect );
 		UGameplayStatics::FinishSpawningActor(Bomb, SpawnTransform);
+	}
+	int32 ADynamoCharacter::GetScore() const
+	{
+		// Retrieve the score from the GameInstance.
+
+		UWorld* const World = GetWorld();
+		check(IsValid(World));
+
+		UDynamoGameInstance* const GameInstance = World->GetGameInstanceChecked<UDynamoGameInstance>();
+
+		const TOptional<int32> PlayerControllerId = GetPlayerControllerId();
+
+		if (!PlayerControllerId.IsSet())
+		{
+			return 0;
+		}
+		return GameInstance->GetPlayerScore(PlayerControllerId.GetValue());
+	}
+
+	void ADynamoCharacter::IncrementScore()
+	{
+		// Store the score from the GameInstance so it presists between matches.
+
+		UWorld* const World = GetWorld();
+		check(IsValid(World));
+
+		const TOptional<int32> PlayerControllerId = GetPlayerControllerId();
+		if (!PlayerControllerId.IsSet())
+		{
+			return;
+		}
+
+		UDynamoGameInstance* const GameInstance = World->GetGameInstanceChecked<UDynamoGameInstance>();
+		GameInstance->IncrementPlayerScore(PlayerControllerId.GetValue());
 	}
 

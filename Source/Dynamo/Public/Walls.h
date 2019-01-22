@@ -16,12 +16,15 @@ class DYNAMO_API AWalls : public AActor
 	GENERATED_BODY()
 
 public:
-	bool  IsBreakable() const { return bIsBreakable; }
+	bool  IsBreakable() const { return bIsBreakable;}
+
 	float GetDropChance() const { return DropChance; }
 
 	const TArray<TSubclassOf<APowerUps>>& GetDropList() const { return DropList; }
 
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	void EndPlay(const EEndPlayReason::Type EndPlayReason);
+
+	void BeginPlay();
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -32,8 +35,6 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 		bool bIsBreakable = false;
-
-	virtual void BeginPlay() override;
 
 private:
 	void SpawnPowerup();
